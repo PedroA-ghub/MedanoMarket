@@ -46,6 +46,10 @@ services:
         value: "MedanoMarket <noreply@medanomarket.com>"
       - key: GOOGLE_REDIRECT_URI
         value: "https://medanomarket.onrender.com/accounts/google/login/callback/"
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
 
 databases:
   - name: medanomarket-db

@@ -20,4 +20,7 @@ python manage.py migrate
 echo "--- Collecting static files ---"
 python manage.py collectstatic --no-input
 
+echo "--- Creating admin user if configured ---"
+python manage.py ensure_admin
+
 cd ..
