@@ -1,4 +1,3 @@
-import imghdr
 from decimal import Decimal
 from rest_framework import viewsets, status, permissions, parsers, throttling
 from rest_framework.decorators import api_view, permission_classes, action
