@@ -10,7 +10,7 @@ from django.utils import timezone
 from allauth.socialaccount.models import SocialApp, SocialAccount
 from ventas.models import User
 
-FRONTEND_URL = "http://localhost:5173"
+FRONTEND_URL = settings.BASE_URL
 
 
 def google_login(request):
