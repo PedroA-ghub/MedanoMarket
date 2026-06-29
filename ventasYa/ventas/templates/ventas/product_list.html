@@ -1,0 +1,24 @@
+{% extends "ventas/base.html" %}
+
+{% block title %}Lista de productos{% endblock %}
+
+{% block content %}
+<h1>Productos disponibles</h1>
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description|truncatechars:100 }}</p>
+                <p class="card-text"><strong>Precio:</strong> ${{ product.price }}</p>
+                <p class="card-text"><strong>Vendedor:</strong> {{ product.seller.email }}</p>
+                <a href="{% url 'ventas:product_detail' product.id %}" class="btn btn-primary">Ver detalles</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No hay productos disponibles.</p>
+    {% endfor %}
+</div>
+{% endblock %}

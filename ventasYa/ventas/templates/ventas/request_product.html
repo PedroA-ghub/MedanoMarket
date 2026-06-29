@@ -1,0 +1,16 @@
+{% extends "ventas/base.html" %}
+
+{% block title %}Solicitar producto{% endblock %}
+
+{% block content %}
+<h1>Solicitar {{ product.name }}</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="shipping_address" class="form-label">Dirección de envío</label>
+        <textarea class="form-control" id="shipping_address" name="shipping_address" rows="3" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Confirmar solicitud</button>
+    <a href="{% url 'ventas:product_detail' product.id %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

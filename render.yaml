@@ -1,0 +1,53 @@
+services:
+  - type: web
+    name: medanomarket
+    runtime: python
+    repo: https://github.com/tu-usuario/tu-repo
+    plan: free
+    region: oregon
+    buildCommand: ./build.sh
+    startCommand: gunicorn ventasYa.wsgi --chdir ventasYa --log-file -
+    envVars:
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com,localhost,127.0.0.1"
+      - key: DB_NAME
+        fromDatabase:
+          name: medanomarket-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: medanomarket-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: medanomarket-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: medanomarket-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: medanomarket-db
+          property: port
+      - key: GOOGLE_OAUTH_CLIENT_ID
+        sync: false
+      - key: GOOGLE_OAUTH_CLIENT_SECRET
+        sync: false
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        value: "MedanoMarket <noreply@medanomarket.com>"
+      - key: GOOGLE_REDIRECT_URI
+        value: "https://medanomarket.onrender.com/accounts/google/login/callback/"
+
+databases:
+  - name: medanomarket-db
+    plan: free
+    region: oregon

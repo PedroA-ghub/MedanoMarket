@@ -1,0 +1,41 @@
+# Environment variables
+.env
+
+# Database
+db.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Media files (uploads)
+media/
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Logs
+*.log

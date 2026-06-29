@@ -1,0 +1,39 @@
+# Environment variables
+.env
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+venv/
+env/
+.venv/
+
+# Database
+*.sqlite3
+
+# Media uploads
+media/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log

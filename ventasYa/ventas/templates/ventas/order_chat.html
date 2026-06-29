@@ -1,0 +1,35 @@
+{% extends "ventas/base.html" %}
+
+{% block title %}Chat de orden #{{ order.id }}{% endblock %}
+
+{% block content %}
+<h2>Chat sobre la orden #{{ order.id }}</h2>
+<p><strong>Producto:</strong> {{ order.items.first.product_name }}</p>
+<p><strong>Estado:</strong> {{ order.status }}</p>
+
+<div class="chat-box" style="border:1px solid #ccc; padding:10px; height:400px; overflow-y:scroll;">
+    {% for msg in messages %}
+    <div class="message {% if msg.sender == user %}my-message{% else %}other-message{% endif %}">
+        <strong>{{ msg.sender.email }}:</strong> {{ msg.content }}<br>
+        <small>{{ msg.sent_at|date:"d/m/Y H:i" }}</small>
+    </div>
+    {% empty %}
+    <p>No hay mensajes aún.</p>
+    {% endfor %}
+</div>
+
+<form method="post" style="margin-top:10px;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Enviar</button>
+</form>
+
+<div class="action-buttons" style="margin-top:20px;">
+    {% if user_is_seller and not order.seller_delivered %}
+    <a href="{% url 'ventas:mark_delivered' order.id %}" class="btn btn-success">Marcar como entregado</a>
+    {% endif %}
+    {% if user_is_buyer and order.seller_delivered and not order.buyer_paid %}
+    <a href="{% url 'ventas:verify_payment' order.id %}" class="btn btn-info">Verificar pago</a>
+    {% endif %}
+</div>
+{% endblock %}

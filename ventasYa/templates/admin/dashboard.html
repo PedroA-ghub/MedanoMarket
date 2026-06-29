@@ -1,0 +1,271 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}Dashboard - MedanoMarket{% endblock %}
+
+{% block extrastyle %}
+<style>
+  :root {
+    --card-bg: var(--django-admin-bg, #fff);
+    --card-border: #e2e8f0;
+    --card-radius: 12px;
+  }
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .stat-card .label {
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #64748b;
+    margin-bottom: .25rem;
+  }
+  .stat-card .value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .chart-box {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: 1.25rem;
+  }
+  .chart-box h3 {
+    margin: 0 0 1rem;
+    font-size: .95rem;
+    font-weight: 600;
+    color: #334155;
+  }
+  .chart-box canvas {
+    width: 100% !important;
+    max-height: 260px;
+  }
+  .chart-box.full {
+    grid-column: 1 / -1;
+  }
+  .top-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .top-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: .5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: .875rem;
+  }
+  .top-list li:last-child { border-bottom: none; }
+  .top-list .name { color: #0f172a; }
+  .top-list .count { color: #64748b; font-weight: 600; }
+  .status-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 600;
+  }
+  @media (max-width: 768px) {
+    .chart-row { grid-template-columns: 1fr; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom:.5rem">Panel de Control</h1>
+<p style="color:#64748b;margin-bottom:1.5rem">
+  Últimos 30 días · {% now "d/m/Y H:i" %}
+</p>
+
+<div class="dashboard-grid">
+  <div class="stat-card">
+    <div class="label">Usuarios</div>
+    <div class="value">{{ total_users }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Productos</div>
+    <div class="value">{{ total_products }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Órdenes</div>
+    <div class="value">{{ total_orders }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Vistas</div>
+    <div class="value">{{ total_views }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Órdenes pendientes</div>
+    <div class="value" style="color:#f59e0b">{{ pending_orders }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Denuncias pendientes</div>
+    <div class="value" style="color:#ef4444">{{ pending_reports }}</div>
+  </div>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <h3>Usuarios nuevos / día</h3>
+    <canvas id="chartUsers"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>Órdenes / día</h3>
+    <canvas id="chartOrders"></canvas>
+  </div>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <h3>Vistas de productos / día</h3>
+    <canvas id="chartViews"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>Ingresos confirmados / día</h3>
+    <canvas id="chartRevenue"></canvas>
+  </div>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <h3>Órdenes por estado</h3>
+    <canvas id="chartStatus"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>Productos más vistos (30 días)</h3>
+    {% if top_products %}
+    <ol class="top-list">
+      {% for name, count in top_products %}
+      <li><span class="name">{{ name }}</span> <span class="count">{{ count }} vistas</span></li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p style="color:#94a3b8">Sin datos</p>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+const commonOpts = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+  },
+  scales: {
+    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+    x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } },
+  },
+};
+
+const labels = {{ labels_30|safe }};
+
+new Chart(document.getElementById('chartUsers'), {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [{
+      data: {{ users_series|safe }},
+      borderColor: '#3b82f6',
+      backgroundColor: 'rgba(59,130,246,.08)',
+      fill: true,
+      tension: .35,
+      pointRadius: 2,
+    }]
+  },
+  options: commonOpts,
+});
+
+new Chart(document.getElementById('chartOrders'), {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [{
+      data: {{ orders_series|safe }},
+      backgroundColor: '#8b5cf6',
+      borderRadius: 4,
+    }]
+  },
+  options: commonOpts,
+});
+
+new Chart(document.getElementById('chartViews'), {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [{
+      data: {{ views_series|safe }},
+      borderColor: '#10b981',
+      backgroundColor: 'rgba(16,185,129,.08)',
+      fill: true,
+      tension: .35,
+      pointRadius: 2,
+    }]
+  },
+  options: commonOpts,
+});
+
+new Chart(document.getElementById('chartRevenue'), {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [{
+      data: {{ revenue_series|safe }},
+      borderColor: '#f59e0b',
+      backgroundColor: 'rgba(245,158,11,.08)',
+      fill: true,
+      tension: .35,
+      pointRadius: 2,
+    }]
+  },
+  options: {
+    ...commonOpts,
+    scales: {
+      ...commonOpts.scales,
+      y: { ...commonOpts.scales.y, ticks: { callback: v => '$' + v } },
+    },
+  },
+});
+
+const statusColors = { pending: '#f59e0b', confirmed: '#3b82f6', delivered: '#8b5cf6', completed: '#22c55e', cancelled: '#ef4444' };
+const statusLabels = { pending: 'Pendiente', confirmed: 'Confirmada', delivered: 'Entregada', completed: 'Completada', cancelled: 'Cancelada' };
+const statusData = {{ orders_by_status|safe }};
+
+new Chart(document.getElementById('chartStatus'), {
+  type: 'doughnut',
+  data: {
+    labels: Object.keys(statusData).map(k => statusLabels[k] || k),
+    datasets: [{
+      data: Object.values(statusData),
+      backgroundColor: Object.keys(statusData).map(k => statusColors[k] || '#94a3b8'),
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } },
+    },
+  },
+});
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "ventas/base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>{{ product.name }}</h1>
+        <p>{{ product.description }}</p>
+        <p><strong>Precio:</strong> ${{ product.price }}</p>
+        <p><strong>Stock:</strong> {{ product.stock }}</p>
+        <p><strong>Vendedor:</strong> {{ product.seller.email }}</p>
+        {% if user.is_authenticated and user != product.seller %}
+        <a href="{% url 'ventas:request_product' product.id %}" class="btn btn-success">Solicitar producto</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

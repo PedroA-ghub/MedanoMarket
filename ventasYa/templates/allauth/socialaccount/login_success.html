@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login Exitoso - MedanoMarket</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0c0f1a 0%, #111827 50%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 3rem;
+        }
+        .logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #14b8a6, #06b6d4);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        .logo svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 0.5rem;
+        }
+        p {
+            color: #94a3b8;
+            margin: 0 0 2rem;
+        }
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(20, 184, 166, 0.3);
+            border-top-color: #14b8a6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <svg viewBox="0 0 24 24"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12zm-7-8c-1.66 0-3-1.34-3-3H7c0 2.76 2.24 5 5 5s5-2.24 5-5h-2c0 1.66-1.34 3-3 3z"/></svg>
+        </div>
+        <h1>Login Exitoso</h1>
+        <p>Has iniciado sesión correctamente. Redirigiendo...</p>
+        <div class="spinner"></div>
+    </div>
+    <script>
+        (function() {
+            setTimeout(function() {
+                window.location.href = 'http://localhost:5173/?auth=success&t=' + new Date().getTime();
+            }, 1000);
+        })();
+    </script>
+</body>
+</html>
